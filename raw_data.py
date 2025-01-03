@@ -13,24 +13,23 @@ class TaskCategory(Enum):
 raw_examples = [
     {
         'image_description': 'a triangle with sides labeled 5 cm, 12 cm, and 13 cm.',
-        'query': 'Find the area of the triangle.'
-        'ground_truth': 'triangle_area_by_sides(5, 12, 13)'
+        'query': 'Find the area of the triangle.',
+        'ground_truth': 'triangle_area_by_sides(a=5, b=12, c=13)',
         'image': '9qY99XhidnZ9U7U.png'
     },
     {
         'task': 'An isosceles triangle is drawn with a base of 10 cm and equal sides of 7 cm.',
-        'query': 'Find the perimeter of the triangle.'
-        'ground_truth': 'isosceles_triangle_perimeter(10, 8)'
-        'image': '3Wv9zBDP8J5rgRu'
+        'query': 'Find the perimeter of the triangle.',
+        'ground_truth': 'isosceles_triangle_perimeter(base=10, side=8)',
+        'image': '3Wv9zBDP8J5rgRu.png'
     },
     {
         'task': 'A rectangle with dimensions 8 cm by 6 cm',
-        'query': 'Calculate the perimeter of the rectangle'
-        'ground_truth': 'rectangle_perimeter(8, 6)'
-        'image': 'AQWqXKvyP87Bq5c'
+        'query': 'Calculate the perimeter of the rectangle',
+        'ground_truth': 'rectangle_perimeter(length=8, width=6)',
+        'image': 'AQWqXKvyP87Bq5c.png'
     },
 ]
-
 
 name_to_func = {
     "triangle_area_by_sides": '''

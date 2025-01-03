@@ -7,9 +7,7 @@ import re
 from typing import Any
 import raw_data
 
-
-
-def python_function_def_to_json(func_str: str) -> dict[str, Any]:
+def python_func_def_to_json(func_str: str) -> dict[str, Any]:
   """Converts a Python function definition string to a JSON format.
 
   Args:
@@ -96,8 +94,7 @@ def _parse_arg(expr: ast.Expr) -> Any:
     return {kw.arg: _parse_arg(kw.value) for kw in expr.keywords}
 
 
-def _convert_python_func_call_to_json(func_call: str) -> dict[str, Any]:
-  function_call
+def python_func_call_to_json(func_call: str) -> dict[str, Any]:
   try:
     parse_tree = ast.parse(func_call)
   except Exception as e:
@@ -128,10 +125,11 @@ def _convert_python_func_call_to_json(func_call: str) -> dict[str, Any]:
 
 def gen_simple_example(id, image_name, query, ground_truth) -> tuple[dict, dict]:
   ground_truth_func_name = _parse_function_name(ground_truth)
-  if ground_truth_func_name not in raw_data.name_to_fun:
+  if ground_truth_func_name not in raw_data.name_to_func:
     raise ValueError(f'invalid ground truth function name {ground_truth_func_name}')
-  func_desc = raw_data.name_to_func[ground_truth_func_name]
-  image_path = f'images/{image_name}.png'
+  python_func_desc = raw_data.name_to_func[ground_truth_func_name]
+  json_func_desc = python_func_def_to_json(python_func_desc)
+  image_path = f'images/{image_name}'
   with open(image_path, 'rb') as image_file:
     # Read the file's binary content
     image_data = image_file.read()
@@ -139,7 +137,7 @@ def gen_simple_example(id, image_name, query, ground_truth) -> tuple[dict, dict]
     ex = {
       'id': id,
       'tools': [
-        {'function_declarations': [func_desc]}
+        {'function_declarations': [json_func_desc]}
       ],
       'contents': [
         {
@@ -153,28 +151,31 @@ def gen_simple_example(id, image_name, query, ground_truth) -> tuple[dict, dict]
       ],
     }
     ground_truth = {
-      'tool_calls': [_convert_python_func_call_to_json(ground_truth)]
+      'id': id,
+      'tool_calls': [python_func_call_to_json(ground_truth)]
     }
   return ex, ground_truth
 
 # Main function
 def main():
-  print("Available functions:")
-  for name, definition in raw_data.name_to_func.items():
-    json_definition = python_function_def_to_json(definition)
-    print(f"- {name}")
-    print(json_definition)
+  # print("Available functions:")
+  # for name, definition in raw_data.name_to_func.items():
+  #   json_definition = python_function_def_to_json(definition)
+  #   print(f"- {name}")
+  #   print(json_definition)
 
-  output_file = "output.jsonl"
-  with open(output_file, "w") as file:
-    for index, raw_ex in enumerate(raw_data.raw_examples):
-      id = f'simple-{index}'
-      input_prompt, ground_truth = gen_simple_example(id, raw_ex['image'], raw_ex['query'], raw_ex[''])
-      print(input_prompt)
-      print(ground_truth)
-      input_prompt_str = json.dumps(input_prompt)
-      ground_truth_str = json.dumps(ground_truth)
-      file.write(input_prompt_str + '\n')
+  input_prompt_filename = 'simple.jsonl'
+  ground_truth_filepath = 'ground_truth_simple.jsonl'
+  with open(input_prompt_filename, 'w') as input_prompt_file:
+    with open(ground_truth_filepath, 'w') as ground_truth_file:
+      for index, raw_ex in enumerate(raw_data.raw_examples):
+        id = f'simple-{index}'
+        input_prompt, ground_truth = gen_simple_example(id, raw_ex['image'], raw_ex['query'], raw_ex['ground_truth'])
+        input_prompt_str = json.dumps(input_prompt)
+        ground_truth_str = json.dumps(ground_truth)
+        #print(ground_truth_str)
+        input_prompt_file.write(input_prompt_str + '\n')
+        ground_truth_file.write(ground_truth_str + '\n')
 
 # Run the program
 if __name__ == "__main__":

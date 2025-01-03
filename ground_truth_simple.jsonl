@@ -1,0 +1,3 @@
+{"id": "simple-0", "tool_calls": [{"name": "triangle_area_by_sides", "args": {"a": 5, "b": 12, "c": 13}}]}
+{"id": "simple-1", "tool_calls": [{"name": "isosceles_triangle_perimeter", "args": {"base": 10, "side": 8}}]}
+{"id": "simple-2", "tool_calls": [{"name": "rectangle_perimeter", "args": {"length": 8, "width": 6}}]}
